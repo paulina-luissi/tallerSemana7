@@ -37,7 +37,7 @@ def preprocess_inputs(job_title, experience_level, employee_country, company_cou
 
 def load_model():
     #model_path = os.path.join(os.path.dirname(__file__), '..', '..', 'model-pkg', 'best_cbr_reg_model_country.pkl') # original
-    model_path = os.path.join(os.path.dirname(__file__), 'best_cbr_reg_model_country_api.pkl') # Para correrlo localmente
+    model_path = os.path.join(os.path.dirname(__file__), 'best_cbr_reg_model_country_api.pkl')
     with open(model_path, 'rb') as model_file:
         model = pickle.load(model_file)
     return model
@@ -46,9 +46,14 @@ def load_model():
 model = load_model()
 
 def predict_salary(job_title, experience_level, employee_country, company_country):
-    # Preprocess inputs
-    input_data = preprocess_inputs(job_title, experience_level, employee_country, company_country)
+    # Validate inputs
+    if any(val is None for val in [job_title, experience_level, employee_country, company_country]):
+        raise ValueError("All input fields are required.")
 
+    # Preprocess inputs
+    #input_data = preprocess_inputs(job_title, experience_level, employee_country, company_country)
+    processed_input = preprocess_inputs(job_title, experience_level, employee_country, company_country)
     # Predict salary
-    salary = model.predict(input_data)
-    return salary[0]
+    #prediction = model.predict(input_data)
+    prediction = model.predict(processed_input)
+    return float(prediction[0])

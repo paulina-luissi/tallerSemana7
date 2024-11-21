@@ -1,5 +1,4 @@
 from typing import Any
-
 from fastapi import APIRouter, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
@@ -11,11 +10,9 @@ from app.config import settings, setup_app_logging
 # setup logging as early as possible
 setup_app_logging(config=settings)
 
-
 app = FastAPI(
     title=settings.PROJECT_NAME, openapi_url=f"{settings.API_V1_STR}/openapi.json"
 )
-
 root_router = APIRouter()
 
 # Cuerpo de la respuesta en la raíz
@@ -32,9 +29,7 @@ def index(request: Request) -> Any:
         "</body>"
         "</html>"
     )
-
     return HTMLResponse(content=body)
-
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
 app.include_router(root_router)
@@ -48,7 +43,6 @@ if settings.BACKEND_CORS_ORIGINS:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-
 
 if __name__ == "__main__":
     # Use this for debugging purposes only

@@ -25,9 +25,7 @@ def health() -> dict:
     health = schemas.Health(
         name=settings.PROJECT_NAME, api_version=__version__, model_version=model_version
     )
-
     return health.dict()
-
 
 # Ruta para realizar las predicciones
 @api_router.post(
@@ -35,7 +33,7 @@ def health() -> dict:
         response_model=schemas.PredictionResults,
         status_code=200,
         summary="Predict Salary",
-    description="Predicts the salary based on job details.",
+    description="Predicts the salary based on job details."
 )
 
 async def predict(input_data: DataInput):
@@ -43,6 +41,13 @@ async def predict(input_data: DataInput):
     Predict endpoint for a single input.
     """
     try:
+        # Log the received input data
+        logger.info(f"Received input data: {input_data}")
+
+        # Validate the input data
+        if not all([input_data.job_title, input_data.experience_level, input_data.employee_country, input_data.company_country]):
+            raise HTTPException(status_code=400, detail="Missing required fields in the input data.")
+
         # Call the prediction function
         prediction = predict_salary(
             job_title=input_data.job_title,
@@ -51,6 +56,9 @@ async def predict(input_data: DataInput):
             company_country=input_data.company_country
         )
 
+        # Log the prediction result
+        logger.info(f"Prediction result: {prediction}")
+        
         # Return the prediction
         return PredictionResults(
             predictions=[prediction],  # Wrap in a list to maintain compatibility
